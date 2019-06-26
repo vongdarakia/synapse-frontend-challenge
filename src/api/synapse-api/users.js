@@ -1,19 +1,23 @@
-import {
-    getUserFromLocaleStorage,
-    storeUser,
-    userExists
-} from "../fake-user-database";
-import { synapseApi, synapseApiHeader } from "./api-settings";
+import { synapseApiHost, synapseHeader } from "./api-settings";
+import FakeAPI from "../fake-api";
 
 export default {
     createUser: async ({ firstName, lastName, phone, email, password }) => {
-        if (userExists(email)) {
+        try {
+            FakeAPI.getUser(email, password);
             throw new Error("User already exists");
+        } catch (error) {
+            if (
+                error.message === "Password doesn't match" ||
+                error.message === "User already exists"
+            ) {
+                throw new Error("User already exists");
+            }
         }
 
-        const response = await fetch(`${synapseApi}/users`, {
+        const response = await fetch(`${synapseApiHost}/users`, {
             method: "POST",
-            headers: synapseApiHeader,
+            headers: synapseHeader,
             body: JSON.stringify({
                 logins: [{ email, password }],
                 phone_numbers: [phone],
@@ -30,15 +34,15 @@ export default {
             throw new Error(user.error.en);
         }
 
-        storeUser(email, password, user._id);
+        FakeAPI.saveUser(email, password, user._id);
 
         return user;
     },
 
     viewUser: async userId => {
-        const response = await fetch(`${synapseApi}/users/${userId}`, {
+        const response = await fetch(`${synapseApiHost}/users/${userId}`, {
             method: "GET",
-            headers: synapseApiHeader
+            headers: synapseHeader
         });
         const user = await response.json();
 

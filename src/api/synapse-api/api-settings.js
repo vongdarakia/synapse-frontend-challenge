@@ -1,9 +1,9 @@
 const corsProxy = "https://cors-anywhere.herokuapp.com/";
 const synapseHost = "https://uat-api.synapsefi.com/v3.1";
 
-export const synapseApi = `${corsProxy}${synapseHost}`;
+export const synapseApiHost = `${corsProxy}${synapseHost}`;
 
-export const synapseApiHeader = {
+export const synapseHeader = {
     "X-SP-GATEWAY": `${process.env.REACT_APP_SYNAPSEFI_CLIENT_ID}|${
         process.env.REACT_APP_SYNAPSEFI_CLIENT_SECRET
     }`,

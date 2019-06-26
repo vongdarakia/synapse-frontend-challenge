@@ -1,12 +1,13 @@
-import { getUserFromLocaleStorage } from "../api/fake-user-database";
-import { SynapseAPI } from "../api/synapse-api";
+import FakeAPI from "../api/fake-api";
+import SynapseAPI from "../api/synapse-api";
 
 export const Auth = {
     login: async (email, password) => {
         try {
-            const existingUser = getUserFromLocaleStorage(email, password);
+            const user = FakeAPI.getUser(email, password);
+            const synapseUser = await SynapseAPI.viewUser(user.userId);
 
-            return SynapseAPI.viewUser(existingUser.userId);
+            // if (synapseUser)
         } catch (error) {
             throw error;
         }

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import SignUp from "./SignUp";
-import { SynapseAPI } from "../../../api/synapse-api";
+import SynapseAPI from "../../../api/synapse-api";
 
 const SignUpView = () => {
     const [loading, setLoading] = useState(false);
@@ -10,7 +10,7 @@ const SignUpView = () => {
         try {
             setLoading(true);
             const user = await SynapseAPI.createUser(data);
-
+            console.log("join dave");
             // authenticate and go to home page
         } catch (error) {
             setError(error.message);

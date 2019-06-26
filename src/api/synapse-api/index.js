@@ -1,5 +1,7 @@
 import users from "./users";
 
-export const SynapseAPI = {
+const SynapseAPI = {
     ...users
 };
+
+export default SynapseAPI;
