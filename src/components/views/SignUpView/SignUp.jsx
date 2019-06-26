@@ -14,7 +14,7 @@ const Styled = styled.div`
     }
 `;
 
-const SignUp = ({ onClickJoin }) => {
+const SignUp = ({ onClickJoin, loading, error }) => {
     const [phone = "", setPhone] = useState();
     const [firstName = "", setFirstName] = useState();
     const [lastName = "", setLastName] = useState();
@@ -31,6 +31,7 @@ const SignUp = ({ onClickJoin }) => {
                 variant="outlined"
                 value={firstName}
                 onChange={e => setFirstName(e.target.value)}
+                disabled={loading}
             />
             <TextField
                 id="input-last-name"
@@ -40,6 +41,7 @@ const SignUp = ({ onClickJoin }) => {
                 variant="outlined"
                 value={lastName}
                 onChange={e => setLastName(e.target.value)}
+                disabled={loading}
             />
             <TextField
                 id="input-email"
@@ -50,6 +52,7 @@ const SignUp = ({ onClickJoin }) => {
                 autoComplete="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
+                disabled={loading}
             />
             <TextField
                 id="input-password"
@@ -60,6 +63,7 @@ const SignUp = ({ onClickJoin }) => {
                 autoComplete="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
+                disabled={loading}
             />
             <TextField
                 id="input-phone"
@@ -78,7 +82,9 @@ const SignUp = ({ onClickJoin }) => {
                         : "(" + n[1] + ") " + n[2] + (n[3] ? "-" + n[3] : "");
                     setPhone(number);
                 }}
+                disabled={loading}
             />
+            {error && <div>{error}</div>}
             <Button
                 id="btn-join"
                 onClick={() => {
@@ -92,9 +98,9 @@ const SignUp = ({ onClickJoin }) => {
                 }}
                 variant="contained"
                 color="primary"
-                disabled={!email || !password || phone.length !== 14}
+                disabled={!email || !password || phone.length !== 14 || loading}
             >
-                Join Dave
+                {loading ? "Signing up..." : "Join Dave"}
             </Button>
         </Styled>
     );

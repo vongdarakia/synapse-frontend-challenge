@@ -3,15 +3,21 @@ import SignUp from "./SignUp";
 import { SynapseAPI } from "../../../api/synapse-api";
 
 const SignUpView = () => {
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
-    const joinDave = data => {
+
+    const joinDave = async data => {
         try {
-            SynapseAPI.createUser(data);
+            setLoading(true);
+            const user = await SynapseAPI.createUser(data);
+
+            // authenticate and go to home page
         } catch (error) {
-            setError(error);
+            setError(error.message);
+            setLoading(false);
         }
     };
-    return <SignUp onClickJoin={joinDave} error={error} />;
+    return <SignUp onClickJoin={joinDave} loading={loading} error={error} />;
 };
 
 export default SignUpView;

@@ -6,12 +6,27 @@ export const getUserLocaleStorageKey = email => {
     return `${SYNAPSE_USER_LOCALE_STORAGE_KEY}${email}`;
 };
 
-export const getUserFromLocaleStorage = (email, password) => {
+export const userExists = email => {
     const user = localStorage[getUserLocaleStorageKey(email)];
 
     if (user) {
-        return JSON.parse(user);
+        return true;
     }
+    return false;
+};
+
+export const getUserFromLocaleStorage = (email, password) => {
+    const data = localStorage[getUserLocaleStorageKey(email)];
+
+    if (data) {
+        const user = JSON.parse(data);
+
+        if (user.password === password) {
+            return user;
+        }
+        throw new Error("Password doesn't match");
+    }
+    throw new Error("User doesn't exist");
 };
 
 export const storeUser = (email, password, userId) => {

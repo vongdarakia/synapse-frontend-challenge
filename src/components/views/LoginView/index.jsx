@@ -1,42 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 import { withRouter } from "react-router-dom";
 import Login from "./Login";
+import { Auth } from "../../../auth";
 
 const LoginView = ({ history }) => {
-    const onClickSubmit = async ({ email, password }) => {
-        const query = `
-            query {
-                login(email: "${email}", password: "${password}") {
-                    user {
-                        firstName
-                        lastName
-                        email
-                    }
-                    token
-                }
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const login = async ({ email, password }) => {
+        try {
+            setLoading(true);
+            const user = await Auth.login(email, password);
+
+            if (user) {
+                history.push("/");
             }
-        `;
-
-        const response = await fetch("/.netlify/functions/graphql", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ query })
-        });
-        const {
-            errors,
-            data: { login }
-        } = await response.json();
-
-        if (errors) {
-            console.error(errors);
-        } else {
-            const { user, token } = login;
-            localStorage["RECEIPT_LOGGER_JWT_TOKEN"] = token;
-            // history.push('/');
+        } catch (error) {
+            setError(error.message);
+            setLoading(false);
         }
     };
 
-    return <Login onClickSubmit={onClickSubmit} />;
+    return <Login onSubmitLogin={login} loading={loading} error={error} />;
 };
 
 export default withRouter(LoginView);
