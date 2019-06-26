@@ -64,7 +64,7 @@ const Login = ({ onSubmitLogin, loading, error }) => {
                     disabled={!email || !password || loading}
                     type="submit"
                 >
-                    {loading ? "Logging in..." : "Login"}
+                    {loading ? "Logging in..." : "Log in"}
                 </Button>
             </form>
         </Styled>

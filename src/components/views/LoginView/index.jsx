@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { withRouter } from "react-router-dom";
 import Login from "./Login";
-import { Auth } from "../../../auth";
+import Auth from "../../../auth";
 
 const LoginView = ({ history }) => {
     const [error, setError] = useState("");
@@ -12,6 +12,7 @@ const LoginView = ({ history }) => {
             setLoading(true);
             const user = await Auth.login(email, password);
 
+            console.log(user);
             if (user) {
                 history.push("/");
             }

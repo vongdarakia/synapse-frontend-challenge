@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import "./App.css";
 
@@ -9,6 +9,8 @@ import LoggedOutHomeView from "./components/views/LoggedOutHomeView";
 
 import { ThemeProvider } from "@material-ui/styles";
 import { createMuiTheme } from "@material-ui/core/styles";
+import Auth from "./auth";
+import SynapseAPI from "./api/synapse-api";
 
 const theme = createMuiTheme({
     palette: {
@@ -22,6 +24,14 @@ const theme = createMuiTheme({
 });
 
 const App = () => {
+    useEffect(() => {
+        const session = Auth.getUserSession();
+        // SynapseAPI.viewUsers();
+        if (session) {
+            console.log(session);
+        }
+    }, []);
+
     return (
         <ThemeProvider theme={theme}>
             <Router>
