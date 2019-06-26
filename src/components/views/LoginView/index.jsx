@@ -2,8 +2,7 @@ import React from "react";
 import { withRouter } from "react-router-dom";
 import Login from "./Login";
 
-const LoginView = props => {
-    const { history } = props;
+const LoginView = ({ history }) => {
     const onClickSubmit = async ({ email, password }) => {
         const query = `
             query {

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import "./App.css";
 
@@ -21,32 +21,22 @@ const theme = createMuiTheme({
     }
 });
 
-class App extends Component {
-    render() {
-        return (
-            <ThemeProvider theme={theme}>
-                <Router>
-                    <div className="App">
-                        <header className="App-header">Header</header>
-                        <Switch>
-                            <Route
-                                exact
-                                path="/"
-                                component={LoggedOutHomeView}
-                            />
-                            <Route
-                                exact
-                                path="/sign-up"
-                                component={SignUpView}
-                            />
-                            <Route exact path="/login" component={LoginView} />
-                            <Route component={NotFoundView} />
-                        </Switch>
-                    </div>
-                </Router>
-            </ThemeProvider>
-        );
-    }
-}
+const App = () => {
+    return (
+        <ThemeProvider theme={theme}>
+            <Router>
+                <div className="App">
+                    <header className="App-header">Header</header>
+                    <Switch>
+                        <Route exact path="/" component={LoggedOutHomeView} />
+                        <Route exact path="/sign-up" component={SignUpView} />
+                        <Route exact path="/login" component={LoginView} />
+                        <Route component={NotFoundView} />
+                    </Switch>
+                </div>
+            </Router>
+        </ThemeProvider>
+    );
+};
 
 export default App;

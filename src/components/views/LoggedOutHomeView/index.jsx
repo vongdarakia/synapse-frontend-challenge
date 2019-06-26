@@ -1,24 +1,17 @@
-import React, { Component } from "react";
+import React from "react";
 import { withRouter } from "react-router-dom";
 import LoggedOutHome from "./LoggedOutHome";
 
-class LoggedOutHomeView extends Component {
-    login = () => {
-        this.props.history.push("/login");
+const LoggedOutHomeView = ({ history }) => {
+    const login = () => {
+        history.push("/login");
     };
 
-    signUp = () => {
-        this.props.history.push("/sign-up");
+    const signUp = () => {
+        history.push("/sign-up");
     };
 
-    render() {
-        return (
-            <LoggedOutHome
-                onClickLogin={this.login}
-                onClickSignUp={this.signUp}
-            />
-        );
-    }
-}
+    return <LoggedOutHome onClickLogin={login} onClickSignUp={signUp} />;
+};
 
 export default withRouter(LoggedOutHomeView);
