@@ -1,26 +1,52 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
+import "./App.css";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import NotFoundView from "./components/views/NotFoundView";
+import SignUpView from "./components/views/SignUpView";
+import LoginView from "./components/views/LoginView";
+import LoggedOutHomeView from "./components/views/LoggedOutHomeView";
+
+import { ThemeProvider } from "@material-ui/styles";
+import { createMuiTheme } from "@material-ui/core/styles";
+
+const theme = createMuiTheme({
+    palette: {
+        primary: {
+            main: "#0C9A41"
+        }
+    },
+    status: {
+        danger: "orange"
+    }
+});
+
+class App extends Component {
+    render() {
+        return (
+            <ThemeProvider theme={theme}>
+                <Router>
+                    <div className="App">
+                        <header className="App-header">Header</header>
+                        <Switch>
+                            <Route
+                                exact
+                                path="/"
+                                component={LoggedOutHomeView}
+                            />
+                            <Route
+                                exact
+                                path="/sign-up"
+                                component={SignUpView}
+                            />
+                            <Route exact path="/login" component={LoginView} />
+                            <Route component={NotFoundView} />
+                        </Switch>
+                    </div>
+                </Router>
+            </ThemeProvider>
+        );
+    }
 }
 
 export default App;
