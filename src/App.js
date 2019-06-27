@@ -5,12 +5,65 @@ import "./App.css";
 import NotFoundView from "./components/views/NotFoundView";
 import SignUpView from "./components/views/SignUpView";
 import LoginView from "./components/views/LoginView";
-import LoggedOutHomeView from "./components/views/LoggedOutHomeView";
+import HomeView from "./components/views/HomeView";
 
 import { ThemeProvider } from "@material-ui/styles";
 import { createMuiTheme } from "@material-ui/core/styles";
 import Auth from "./auth";
-import SynapseAPI from "./api/synapse-api";
+import PrivateRoute from "./components/common/PrivateRoute";
+import NonAuthenticatedOnlyRoute from "./components/common/NonAuthenticatedOnlyRoute";
+import TabNavigation from "./components/common/TabNavigation";
+import { AuthProvider, useAuth } from "./components/common/AuthContext";
+import {
+    AUTH_LOG_OUT,
+    AUTH_SET_USER
+} from "./components/common/AuthContext/actions";
+
+const App = () => {
+    const [{ user }, authDispatch] = useAuth();
+    console.log({ user });
+    useEffect(() => {
+        const session = Auth.getUserSession();
+        // SynapseAPI.viewUsers();
+        if (session) {
+            console.log(session);
+            authDispatch({ type: AUTH_SET_USER, payload: session });
+        }
+    }, []);
+
+    return (
+        <div className="App">
+            <Router>
+                <Switch>
+                    <Route exact path="/" component={HomeView} />
+                    <NonAuthenticatedOnlyRoute
+                        exact
+                        path="/sign-up"
+                        component={SignUpView}
+                    />
+                    <NonAuthenticatedOnlyRoute
+                        exact
+                        path="/login"
+                        component={LoginView}
+                    />
+                    <PrivateRoute path="/private" component={NotFoundView} />
+                    <Route component={NotFoundView} />
+                </Switch>
+
+                {user ? <TabNavigation /> : null}
+                {user ? (
+                    <button
+                        onClick={e => {
+                            authDispatch({ type: AUTH_LOG_OUT });
+                        }}
+                    >
+                        Log out
+                    </button>
+                ) : null}
+            </Router>
+        </div>
+    );
+};
 
 const theme = createMuiTheme({
     palette: {
@@ -23,30 +76,10 @@ const theme = createMuiTheme({
     }
 });
 
-const App = () => {
-    useEffect(() => {
-        const session = Auth.getUserSession();
-        // SynapseAPI.viewUsers();
-        if (session) {
-            console.log(session);
-        }
-    }, []);
-
-    return (
-        <ThemeProvider theme={theme}>
-            <Router>
-                <div className="App">
-                    <header className="App-header">Header</header>
-                    <Switch>
-                        <Route exact path="/" component={LoggedOutHomeView} />
-                        <Route exact path="/sign-up" component={SignUpView} />
-                        <Route exact path="/login" component={LoginView} />
-                        <Route component={NotFoundView} />
-                    </Switch>
-                </div>
-            </Router>
-        </ThemeProvider>
-    );
-};
-
-export default App;
+export default () => (
+    <ThemeProvider theme={theme}>
+        <AuthProvider>
+            <App />
+        </AuthProvider>
+    </ThemeProvider>
+);

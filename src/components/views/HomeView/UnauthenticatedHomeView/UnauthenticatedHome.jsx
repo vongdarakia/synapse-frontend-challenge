@@ -14,7 +14,7 @@ const Styled = styled.div`
     }
 `;
 
-const LoggedOutHome = ({ onClickSignUp, onClickLogin }) => {
+const UnauthenticatedHome = ({ onClickSignUp, onClickLogin }) => {
     return (
         <Styled>
             <Button
@@ -32,4 +32,4 @@ const LoggedOutHome = ({ onClickSignUp, onClickLogin }) => {
     );
 };
 
-export default LoggedOutHome;
+export default UnauthenticatedHome;

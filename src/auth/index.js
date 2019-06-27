@@ -8,6 +8,12 @@ export const storeUserSession = user => {
 };
 
 const Auth = {
+    isAuthenticated: () => {
+        if (sessionStorage[SESSION_LOGIN_KEY]) {
+            return true;
+        }
+        return false;
+    },
     getUserSession: () => {
         try {
             if (sessionStorage[SESSION_LOGIN_KEY]) {
@@ -27,6 +33,12 @@ const Auth = {
             return synapseUser;
         } catch (error) {
             throw error;
+        }
+    },
+    logout: callback => {
+        delete sessionStorage[SESSION_LOGIN_KEY];
+        if (callback) {
+            callback();
         }
     },
     signUp: async ({ firstName, lastName, phone, email, password }) => {
