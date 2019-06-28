@@ -6,7 +6,6 @@ export default function NonAuthenticatedOnlyRoute({
     component: Component,
     ...rest
 }) {
-    console.log("is", Auth.isAuthenticated());
     return (
         <Route
             {...rest}

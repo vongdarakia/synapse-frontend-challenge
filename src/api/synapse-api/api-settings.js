@@ -12,3 +12,13 @@ export const synapseHeader = {
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*"
 };
+
+export const synapseFetch = async (path, options) => {
+    return fetch(`${synapseApiHost}${path}`, {
+        ...options,
+        headers: {
+            ...synapseHeader,
+            ...options.headers
+        }
+    });
+};

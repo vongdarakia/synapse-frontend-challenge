@@ -9,7 +9,7 @@ import HomeView from "./components/views/HomeView";
 
 import { ThemeProvider } from "@material-ui/styles";
 import { createMuiTheme } from "@material-ui/core/styles";
-import Auth from "./auth";
+import Auth, { storeUser } from "./auth";
 import PrivateRoute from "./components/common/PrivateRoute";
 import NonAuthenticatedOnlyRoute from "./components/common/NonAuthenticatedOnlyRoute";
 import TabNavigation from "./components/common/TabNavigation";
@@ -21,12 +21,15 @@ import {
 
 const App = () => {
     const [{ user }, authDispatch] = useAuth();
-    console.log({ user });
+
     useEffect(() => {
         const session = Auth.getUserSession();
+
         // SynapseAPI.viewUsers();
         if (session) {
-            console.log(session);
+            // SynapseAPI.linkBankAccount(session.client.id);
+
+            storeUser(session._id);
             authDispatch({ type: AUTH_SET_USER, payload: session });
         }
     }, []);
@@ -46,7 +49,9 @@ const App = () => {
                         path="/login"
                         component={LoginView}
                     />
-                    <PrivateRoute path="/private" component={NotFoundView} />
+                    <PrivateRoute path="/advances" component={NotFoundView} />
+                    <PrivateRoute path="/banking" component={NotFoundView} />
+                    <PrivateRoute path="/account" component={NotFoundView} />
                     <Route component={NotFoundView} />
                 </Switch>
 

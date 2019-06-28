@@ -1,10 +1,9 @@
-import { synapseApiHost, synapseHeader } from "./api-settings";
+import { synapseFetch } from "./api-settings";
 
 export default {
     createUser: async ({ firstName, lastName, phone, email, password }) => {
-        const response = await fetch(`${synapseApiHost}/users`, {
+        const response = await synapseFetch(`/users`, {
             method: "POST",
-            headers: synapseHeader,
             body: JSON.stringify({
                 logins: [{ email, password }],
                 phone_numbers: [phone],
@@ -25,9 +24,8 @@ export default {
     },
 
     viewUser: async userId => {
-        const response = await fetch(`${synapseApiHost}/users/${userId}`, {
-            method: "GET",
-            headers: synapseHeader
+        const response = await synapseFetch(`/users/${userId}`, {
+            method: "GET"
         });
         const user = await response.json();
 
@@ -39,9 +37,8 @@ export default {
     },
 
     viewUsers: async () => {
-        const response = await fetch(`${synapseApiHost}/users`, {
-            method: "GET",
-            headers: synapseHeader
+        const response = await synapseFetch(`/users`, {
+            method: "GET"
         });
         const user = await response.json();
 

@@ -10,7 +10,7 @@ const SignUpView = () => {
         try {
             setLoading(true);
             const user = await Auth.signUp(data);
-            console.log("join dave");
+
             // authenticate and go to home page
         } catch (error) {
             setError(error.message);

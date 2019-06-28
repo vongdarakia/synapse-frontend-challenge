@@ -1,10 +1,30 @@
 import FakeAPI from "../api/fake-api";
 import SynapseAPI from "../api/synapse-api";
-
-const SESSION_LOGIN_KEY = "synapse-login";
+import {
+    SESSION_LOGIN_KEY,
+    SESSION_REFRESH_TOKEN_KEY,
+    SESSION_OAUTH_KEY
+} from "./constants";
 
 export const storeUserSession = user => {
     sessionStorage[SESSION_LOGIN_KEY] = JSON.stringify(user);
+    sessionStorage[SESSION_REFRESH_TOKEN_KEY] = user.refreshToken;
+};
+
+export const storeOauth = oauth => {
+    sessionStorage[SESSION_OAUTH_KEY] = oauth.oauth_key;
+};
+
+export const storeUser = async userId => {
+    const synapseUser = await SynapseAPI.viewUser(userId);
+    const oauth = await SynapseAPI.issueOauth(
+        userId,
+        synapseUser.refresh_token
+    );
+
+    storeUserSession(synapseUser);
+    storeOauth(oauth);
+    return synapseUser;
 };
 
 const Auth = {
@@ -24,13 +44,14 @@ const Auth = {
         }
         return null;
     },
+    getRefreshToken: () => {
+        return sessionStorage[SESSION_REFRESH_TOKEN_KEY];
+    },
     login: async (email, password) => {
         try {
             const user = FakeAPI.getUser(email, password);
-            const synapseUser = await SynapseAPI.viewUser(user.userId);
 
-            storeUserSession(synapseUser);
-            return synapseUser;
+            return storeUser(user.userId);
         } catch (error) {
             throw error;
         }
@@ -62,7 +83,6 @@ const Auth = {
             password
         });
 
-        console.log(user);
         FakeAPI.saveUser(email, password, user._id);
 
         return user;
