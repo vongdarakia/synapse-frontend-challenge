@@ -57,13 +57,6 @@ const App = () => {
             // );
             // const accounts = await SynapseAPI.linkBankAccount(session._id);
             // // console.log(user);
-            // console.log(
-            //     await SynapseAPI.createDummyTransaction({
-            //         userId: session._id,
-            //         nodeId: accounts[0]._id,
-            //         amount: 5
-            //     })
-            // );
         };
 
         // SynapseAPI.viewUsers();
@@ -93,8 +86,7 @@ const App = () => {
                         component={LoginView}
                     />
                     <NonAuthenticatedOnlyRoute
-                        exact
-                        path="/mfa-validation/:userId"
+                        path="/mfa-validation/:userId/:isSigningUp"
                         component={MFAValidationView}
                     />
                     <PrivateRoute path="/advances" component={NotFoundView} />
@@ -113,6 +105,28 @@ const App = () => {
                         Log out
                     </button>
                 ) : null}
+
+                <button
+                    onClick={async () => {
+                        const session = Auth.getUserSession();
+                        const accounts = await SynapseAPI.linkBankAccount(
+                            session._id
+                        );
+                        console.log(accounts);
+                        console.log(
+                            await SynapseAPI.createDummyTransaction({
+                                userId: session._id,
+                                nodeId: accounts[0]._id,
+                                amount: 5
+                            })
+                        );
+                        console.log(
+                            await SynapseAPI.viewTransactions(session._id)
+                        );
+                    }}
+                >
+                    Link banking
+                </button>
             </Router>
         </div>
     );

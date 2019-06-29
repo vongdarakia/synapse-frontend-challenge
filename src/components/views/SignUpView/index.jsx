@@ -13,7 +13,7 @@ const SignUpView = ({ history }) => {
             const user = await Auth.signUp(data);
 
             // authenticate and go to home page
-            history.push(`/mfa-validation/${user._id}`);
+            history.push(`/mfa-validation/${user._id}/signing-up`);
         } catch (error) {
             setError(error.message);
             setLoading(false);

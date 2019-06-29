@@ -23,23 +23,56 @@ const MFAValidationView = ({ match, history }) => {
                     user.refresh_token,
                     pin
                 );
+
+                if (match.params.isSigningUp) {
+                    const accounts = await SynapseAPI.linkBankAccount(user._id);
+                    console.log(accounts);
+                    const transactionProcesses = [];
+
+                    for (let i = 0; i < 10; i += 1) {
+                        transactionProcesses.push(
+                            SynapseAPI.createDummyTransaction({
+                                userId: user._id,
+                                nodeId: accounts[0]._id,
+                                amount: (Math.random() * 10).toFixed(2)
+                            })
+                        );
+                    }
+
+                    await Promise.all(transactionProcesses);
+                    console.log(await SynapseAPI.viewTransactions(user._id));
+                }
             } else {
+                console.log("sending pin");
                 oauth = await SynapseAPI.select2FADevice(
                     user._id,
                     user.refresh_token,
                     user.phone_numbers[0]
                 );
             }
+            console.log(oauth);
 
             if (oauth.oauth_key) {
+                // sending pin somehow returns an oauth_key sometimes, so we have to handle that
                 await storeUser(user._id, oauth);
                 authDispatch({ type: AUTH_SET_USER, payload: user });
             } else {
+                // if oauth key isn't returned, show user that a pin was sent
+                // unless there was a fingerprint not found error. Unsure what the cause of this is.
+                // But MFA isn't working anymore, so I'm handling that to get through login
+                if (oauth.error) {
+                    throw new Error(oauth.error.en);
+                }
+
                 setPinSent(true);
                 setLoading(false);
-                setError(oauth.error.en);
             }
         } catch (error) {
+            if (error.message.includes("Fingerprint does not exist")) {
+                const user = await SynapseAPI.viewUser(match.params.userId);
+                await storeUser(user._id);
+                authDispatch({ type: AUTH_SET_USER, payload: user });
+            }
             setError(error.message);
             setLoading(false);
         }

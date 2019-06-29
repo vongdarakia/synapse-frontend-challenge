@@ -6,7 +6,10 @@ export default {
             method: "POST",
             body: JSON.stringify({
                 refresh_token: refreshToken
-            })
+            }),
+            headers: {
+                "X-SP-USER": `|${userId}`
+            }
         });
 
         return response.json();
@@ -17,7 +20,10 @@ export default {
             body: JSON.stringify({
                 refresh_token: refreshToken,
                 phone_number: phone
-            })
+            }),
+            headers: {
+                "X-SP-USER": `|${userId}`
+            }
         });
 
         return response.json();
@@ -28,7 +34,10 @@ export default {
             body: JSON.stringify({
                 refresh_token: refreshToken,
                 validation_pin: pin
-            })
+            }),
+            headers: {
+                "X-SP-USER": `|${userId}`
+            }
         });
 
         return response.json();

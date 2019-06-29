@@ -11,9 +11,8 @@ export const getSynapseHeaders = () => {
             process.env.REACT_APP_SYNAPSEFI_CLIENT_SECRET
         }`,
         "X-SP-USER-IP": "127.0.0.1",
-        "X-SP-USER": `${sessionStorage[SESSION_OAUTH_KEY] || ""}|${
-            sessionStorage[SESSION_USER_ID_KEY]
-        }`,
+        "X-SP-USER": `${sessionStorage[SESSION_OAUTH_KEY] ||
+            ""}|${sessionStorage[SESSION_USER_ID_KEY] || ""}`,
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*"
     };
