@@ -2,11 +2,15 @@
 import users from "./users";
 import ach from "./ach";
 import oauth from "./oauth";
+import transaction from "./transaction";
+import fingerprints from "./fingerprints";
 
 const SynapseAPI = {
     ...users,
     ...ach,
-    ...oauth
+    ...oauth,
+    ...transaction,
+    ...fingerprints
 };
 
 export default SynapseAPI;

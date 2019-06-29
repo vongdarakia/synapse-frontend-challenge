@@ -3,27 +3,33 @@ import SynapseAPI from "../api/synapse-api";
 import {
     SESSION_LOGIN_KEY,
     SESSION_REFRESH_TOKEN_KEY,
-    SESSION_OAUTH_KEY
+    SESSION_OAUTH_KEY,
+    SESSION_USER_ID_KEY
 } from "./constants";
 
 export const storeUserSession = user => {
     sessionStorage[SESSION_LOGIN_KEY] = JSON.stringify(user);
-    sessionStorage[SESSION_REFRESH_TOKEN_KEY] = user.refreshToken;
+    sessionStorage[SESSION_REFRESH_TOKEN_KEY] = user.refresh_token;
+    sessionStorage[SESSION_USER_ID_KEY] = user._id;
 };
 
 export const storeOauth = oauth => {
     sessionStorage[SESSION_OAUTH_KEY] = oauth.oauth_key;
 };
 
-export const storeUser = async userId => {
+export const storeUser = async (userId, oauth) => {
     const synapseUser = await SynapseAPI.viewUser(userId);
-    const oauth = await SynapseAPI.issueOauth(
-        userId,
-        synapseUser.refresh_token
-    );
+
+    if (!oauth) {
+        storeOauth(
+            await SynapseAPI.issueOauth(userId, synapseUser.refresh_token)
+        );
+    } else {
+        storeOauth(oauth);
+    }
 
     storeUserSession(synapseUser);
-    storeOauth(oauth);
+
     return synapseUser;
 };
 
@@ -56,8 +62,11 @@ const Auth = {
             throw error;
         }
     },
-    logout: callback => {
+    clearSession: callback => {
         delete sessionStorage[SESSION_LOGIN_KEY];
+        delete sessionStorage[SESSION_REFRESH_TOKEN_KEY];
+        delete sessionStorage[SESSION_USER_ID_KEY];
+        delete sessionStorage[SESSION_OAUTH_KEY];
         if (callback) {
             callback();
         }
@@ -83,8 +92,33 @@ const Auth = {
             password
         });
 
-        FakeAPI.saveUser(email, password, user._id);
+        // const mfaResponse = await SynapseAPI.select2FADevice(
+        //     user._id,
+        //     user.refresh_token,
+        //     phone
+        // );
+        // console.log({ mfaResponse });
 
+        // const fingerprint = await SynapseAPI.registerFingerprint(
+        //     user._id,
+        //     user.refresh_token
+        // );
+
+        // console.log({ fingerprint });
+
+        // To have dummy data to show
+        // const accounts = await SynapseAPI.linkBankAccount(user._id);
+
+        // console.log(
+        //     await SynapseAPI.createDummyTransaction({
+        //         userId: user._id,
+        //         nodeId: accounts[0]._id,
+        //         amount: 5
+        //     })
+        // );
+        // accounts[0]._id
+        FakeAPI.saveUser(email, password, user._id);
+        // await storeUser(user._id);
         return user;
     }
 };

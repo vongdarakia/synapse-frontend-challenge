@@ -1,4 +1,5 @@
 import { synapseFetch } from "./api-settings";
+import { SESSION_OAUTH_KEY } from "../../auth/constants";
 
 export default {
     linkBankAccount: async userId => {
@@ -11,19 +12,32 @@ export default {
                     bank_pw: "test1234",
                     bank_name: "fake"
                 }
-            })
+            }),
+            headers: {
+                "X-SP-USER": `${sessionStorage[SESSION_OAUTH_KEY]}|${userId}`
+            }
         });
 
-        const bank = await response.json();
+        const { mfa: { access_token } = {}, success } = await response.json();
 
-        console.log(bank);
-        // if (bank.error) {
-        //     if (bank.error.en.includes("password")) {
-        //         throw new Error("Password isn't strong enough");
-        //     }
-        //     throw new Error(bank.error.en);
-        // }
+        if (success) {
+            const mfaResponse = await synapseFetch(`/users/${userId}/nodes`, {
+                method: "POST",
+                body: JSON.stringify({
+                    access_token,
+                    mfa_answer: "test_answer"
+                }),
+                headers: {
+                    "X-SP-USER": `${
+                        sessionStorage[SESSION_OAUTH_KEY]
+                    }|${userId}`
+                }
+            });
+            const { nodes } = await mfaResponse.json();
 
-        return bank;
+            return nodes;
+        }
+
+        throw new Error("Failed to link bank");
     }
 };

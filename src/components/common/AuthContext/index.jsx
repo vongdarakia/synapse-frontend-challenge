@@ -15,7 +15,7 @@ function authReducer(state = initialState, { type, payload }) {
             return { user: payload };
         }
         case AUTH_LOG_OUT: {
-            Auth.logout();
+            Auth.clearSession();
             return { user: null };
         }
         default: {
