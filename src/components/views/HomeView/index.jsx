@@ -1,16 +1,47 @@
-import React from "react";
-import UnauthenticatedHomeView from "./UnauthenticatedHomeView";
+import React, { useEffect, useState } from "react";
+import { withRouter } from "react-router-dom";
 import { useAuthState } from "../../common/AuthContext";
-import AuthenticatedHomeView from "./AuthenticatedHomeView";
+import SynapseAPI from "../../../api/synapse-api";
+import UnauthenticatedHome from "./UnauthenticatedHome";
+import AuthenticatedHome from "./AuthenticatedHome";
 
-const HomeView = () => {
+const HomeView = ({ history }) => {
     const { user } = useAuthState();
+    const [transactions, setTransactions] = useState([]);
+    const [error, setError] = useState("");
+
+    useEffect(() => {
+        const loadTransactions = async () => {
+            const data = await SynapseAPI.viewTransactions(user._id);
+
+            if (data.trans) {
+                setTransactions(data.trans);
+            } else if (data.error) {
+                setError(data.error.en);
+            }
+        };
+        loadTransactions();
+    }, []);
 
     if (user) {
-        return <AuthenticatedHomeView />;
+        return (
+            <AuthenticatedHome
+                user={user}
+                error={error}
+                transactions={transactions}
+            />
+        );
     }
 
-    return <UnauthenticatedHomeView />;
+    const login = () => {
+        history.push("/login");
+    };
+
+    const signUp = () => {
+        history.push("/sign-up");
+    };
+
+    return <UnauthenticatedHome onClickLogin={login} onClickSignUp={signUp} />;
 };
 
-export default HomeView;
+export default withRouter(HomeView);

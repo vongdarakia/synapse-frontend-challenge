@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Route, Router, Switch } from "react-router-dom";
+import styled from "styled-components";
 import "./App.css";
 
 import NotFoundView from "./components/views/NotFoundView";
@@ -21,6 +22,19 @@ import {
 import SynapseAPI from "./api/synapse-api";
 import MFAValidationView from "./components/views/MFAValidationView";
 import history from "./history";
+import AccountView from "./components/views/AccountView";
+import { PRIMARY_COLOR } from "./styles";
+
+const Styled = styled.div`
+    #bottom-nav {
+        position: fixed;
+        bottom: 0;
+    }
+
+    height: 100vh;
+    box-sizing: border-box;
+    padding-bottom: 56px;
+`;
 
 const App = () => {
     const [{ user }, authDispatch] = useAuth();
@@ -34,9 +48,9 @@ const App = () => {
                 session.refresh_token
             );
 
-            if (oauth.error) {
+            if (oauth.error && !oauth.error.en.includes()) {
                 Auth.clearSession();
-                history.push("/mfa-validation/" + session._id);
+                history.push(`/mfa-validation/${session._id}/`);
             } else {
                 await storeUser(session._id, oauth);
                 authDispatch({ type: AUTH_SET_USER, payload: session });
@@ -71,7 +85,7 @@ const App = () => {
         return null;
     }
     return (
-        <div className="App">
+        <Styled className="App">
             <Router history={history}>
                 <Switch>
                     <Route exact path="/" component={HomeView} />
@@ -89,14 +103,18 @@ const App = () => {
                         path="/mfa-validation/:userId/:isSigningUp"
                         component={MFAValidationView}
                     />
+                    <NonAuthenticatedOnlyRoute
+                        path="/mfa-validation/:userId"
+                        component={MFAValidationView}
+                    />
                     <PrivateRoute path="/advances" component={NotFoundView} />
                     <PrivateRoute path="/banking" component={NotFoundView} />
-                    <PrivateRoute path="/account" component={NotFoundView} />
+                    <PrivateRoute path="/account" component={AccountView} />
                     <Route component={NotFoundView} />
                 </Switch>
 
                 {user ? <TabNavigation /> : null}
-                {user ? (
+                {/* {user ? (
                     <button
                         onClick={e => {
                             authDispatch({ type: AUTH_LOG_OUT });
@@ -126,16 +144,16 @@ const App = () => {
                     }}
                 >
                     Link banking
-                </button>
+                </button> */}
             </Router>
-        </div>
+        </Styled>
     );
 };
 
 const theme = createMuiTheme({
     palette: {
         primary: {
-            main: "#0C9A41"
+            main: PRIMARY_COLOR
         }
     },
     status: {

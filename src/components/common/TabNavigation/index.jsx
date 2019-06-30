@@ -15,8 +15,8 @@ const useStyles = makeStyles({
 });
 
 function TabNavigation({ history }) {
-    const classes = useStyles();
     const [value, setValue] = React.useState("recents");
+    const classes = useStyles();
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -26,6 +26,7 @@ function TabNavigation({ history }) {
 
     return (
         <BottomNavigation
+            id="bottom-nav"
             value={value}
             onChange={handleChange}
             className={classes.root}

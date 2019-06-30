@@ -17,8 +17,8 @@ const LoginView = ({ history }) => {
             const user = await Auth.login(email, password);
 
             if (user) {
-                history.push("/");
                 authDispatch({ type: AUTH_SET_USER, payload: user });
+                history.push("/");
             }
         } catch (error) {
             setError(error.message);

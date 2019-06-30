@@ -24,9 +24,12 @@ const MFAValidationView = ({ match, history }) => {
                     pin
                 );
 
+                if (oauth.error) {
+                    throw new Error(oauth.error.en);
+                }
                 if (match.params.isSigningUp) {
+                    storeUser(user._id, oauth);
                     const accounts = await SynapseAPI.linkBankAccount(user._id);
-                    console.log(accounts);
                     const transactionProcesses = [];
 
                     for (let i = 0; i < 10; i += 1) {
@@ -40,17 +43,14 @@ const MFAValidationView = ({ match, history }) => {
                     }
 
                     await Promise.all(transactionProcesses);
-                    console.log(await SynapseAPI.viewTransactions(user._id));
                 }
             } else {
-                console.log("sending pin");
                 oauth = await SynapseAPI.select2FADevice(
                     user._id,
                     user.refresh_token,
                     user.phone_numbers[0]
                 );
             }
-            console.log(oauth);
 
             if (oauth.oauth_key) {
                 // sending pin somehow returns an oauth_key sometimes, so we have to handle that
