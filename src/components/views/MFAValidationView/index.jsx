@@ -29,7 +29,10 @@ const MFAValidationView = ({ match, history }) => {
                 }
                 if (match.params.isSigningUp) {
                     storeUser(user._id, oauth);
-                    const accounts = await SynapseAPI.linkBankAccount(user._id);
+                    const accounts = await SynapseAPI.linkBankAccount(
+                        user._id,
+                        oauth.oauth_key
+                    );
                     const transactionProcesses = [];
 
                     for (let i = 0; i < 10; i += 1) {

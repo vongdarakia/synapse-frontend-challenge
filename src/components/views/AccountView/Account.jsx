@@ -2,10 +2,11 @@ import React from "react";
 import styled from "styled-components";
 import AccountCircle from "@material-ui/icons/AccountCircleRounded";
 import ChevronRight from "@material-ui/icons/ChevronRightRounded";
-import ChevronLeft from "@material-ui/icons/ChevronLeftRounded";
-import { PRIMARY_COLOR, MAIN_BACKGROUND_COLOR } from "../../../styles";
-
-const ACCOUNT_PADDING = 12;
+import {
+    PRIMARY_COLOR,
+    MAIN_BACKGROUND_COLOR,
+    MAIN_PADDING
+} from "../../../styles";
 
 const Styled = styled.div`
     display: flex;
@@ -24,7 +25,7 @@ const Styled = styled.div`
         display: flex;
         flex-direction: row;
         width: 100%;
-        padding: ${ACCOUNT_PADDING}px;
+        padding: ${MAIN_PADDING}px;
         box-sizing: border-box;
 
         .account-name {
@@ -47,7 +48,7 @@ const Styled = styled.div`
 
     .account-tabs {
         display: flex;
-        padding: ${ACCOUNT_PADDING}px;
+        padding: ${MAIN_PADDING}px;
         box-sizing: border-box;
         width: 100%;
 
@@ -86,7 +87,7 @@ const Styled = styled.div`
     }
 
     .section-title {
-        padding: ${ACCOUNT_PADDING}px;
+        padding: ${MAIN_PADDING}px;
         box-sizing: border-box;
         text-align: left;
         color: #6d6d6d;
@@ -100,7 +101,7 @@ const Styled = styled.div`
         align-items: center;
         background-color: white;
         width: 100%;
-        padding: ${ACCOUNT_PADDING}px;
+        padding: ${MAIN_PADDING}px;
         box-sizing: border-box;
         cursor: pointer;
 
@@ -113,7 +114,7 @@ const Styled = styled.div`
     }
 `;
 
-const Account = ({ user = {}, onClickLogout }) => {
+const Account = ({ user = {}, onClickLogout, onClickLinkBankAccount }) => {
     const { client = {} } = user;
 
     return (
@@ -139,6 +140,21 @@ const Account = ({ user = {}, onClickLogout }) => {
                 <div className="section-items">
                     <div className="section-item" onClick={onClickLogout}>
                         <div className="section-item-name">Log out</div>
+                        <ChevronRight />
+                    </div>
+                </div>
+            </div>
+
+            <div className="section">
+                <div className="section-title">FAKE</div>
+                <div className="section-items">
+                    <div
+                        className="section-item"
+                        onClick={onClickLinkBankAccount}
+                    >
+                        <div className="section-item-name">
+                            Link bank account{" "}
+                        </div>
                         <ChevronRight />
                     </div>
                 </div>

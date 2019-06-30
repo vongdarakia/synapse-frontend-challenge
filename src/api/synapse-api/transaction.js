@@ -19,12 +19,6 @@ export default {
             })}`,
             {
                 method: "GET"
-                // body: JSON.stringify({
-                //     amount,
-                //     is_credit: isCredit,
-                //     subnetid,
-                //     type
-                // })
             }
         );
 
@@ -33,12 +27,6 @@ export default {
     viewTransactions: async userId => {
         const response = await synapseFetch(`/users/${userId}/trans`, {
             method: "GET"
-            // body: JSON.stringify({
-            //     amount,
-            //     is_credit: isCredit,
-            //     subnetid,
-            //     type
-            // })
         });
         return response.json();
     }

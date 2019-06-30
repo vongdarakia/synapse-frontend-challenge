@@ -92,33 +92,7 @@ const Auth = {
             password
         });
 
-        // const mfaResponse = await SynapseAPI.select2FADevice(
-        //     user._id,
-        //     user.refresh_token,
-        //     phone
-        // );
-        // console.log({ mfaResponse });
-
-        // const fingerprint = await SynapseAPI.registerFingerprint(
-        //     user._id,
-        //     user.refresh_token
-        // );
-
-        // console.log({ fingerprint });
-
-        // To have dummy data to show
-        // const accounts = await SynapseAPI.linkBankAccount(user._id);
-
-        // console.log(
-        //     await SynapseAPI.createDummyTransaction({
-        //         userId: user._id,
-        //         nodeId: accounts[0]._id,
-        //         amount: 5
-        //     })
-        // );
-        // accounts[0]._id
         FakeAPI.saveUser(email, password, user._id);
-        // await storeUser(user._id);
         return user;
     }
 };

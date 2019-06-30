@@ -2,7 +2,8 @@ import { synapseFetch } from "./api-settings";
 import { SESSION_OAUTH_KEY } from "../../auth/constants";
 
 export default {
-    linkBankAccount: async userId => {
+    linkBankAccount: async (userId, oauthKey) => {
+        const oauth = oauthKey || sessionStorage[SESSION_OAUTH_KEY] || "";
         const response = await synapseFetch(`/users/${userId}/nodes`, {
             method: "POST",
             body: JSON.stringify({
@@ -14,7 +15,7 @@ export default {
                 }
             }),
             headers: {
-                "X-SP-USER": `${sessionStorage[SESSION_OAUTH_KEY]}|${userId}`
+                "X-SP-USER": `${oauth}|${userId}`
             }
         });
 
@@ -28,9 +29,7 @@ export default {
                     mfa_answer: "test_answer"
                 }),
                 headers: {
-                    "X-SP-USER": `${
-                        sessionStorage[SESSION_OAUTH_KEY]
-                    }|${userId}`
+                    "X-SP-USER": `${oauth}|${userId}`
                 }
             });
             const { nodes } = await mfaResponse.json();

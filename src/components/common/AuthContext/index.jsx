@@ -1,22 +1,26 @@
 import React, { createContext, useReducer, useContext } from "react";
-import { AUTH_SET_USER, AUTH_LOG_OUT } from "./actions";
+import { AUTH_SET_USER, AUTH_LOG_OUT, SET_USER_BALANCE } from "./actions";
 import Auth from "../../../auth";
 
 const AuthStateContext = createContext();
 const AuthDispatchContext = createContext();
 
 const initialState = {
-    user: null
+    user: null,
+    userBalance: 0
 };
 
 function authReducer(state = initialState, { type, payload }) {
     switch (type) {
         case AUTH_SET_USER: {
-            return { user: payload };
+            return { ...state, user: payload };
         }
         case AUTH_LOG_OUT: {
             Auth.clearSession();
-            return { user: null };
+            return { ...state, user: null };
+        }
+        case SET_USER_BALANCE: {
+            return { ...state, userBalance: payload };
         }
         default: {
             throw new Error(`Unhandled action type: ${type}`);

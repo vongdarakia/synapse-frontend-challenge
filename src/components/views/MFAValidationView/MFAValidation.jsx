@@ -5,9 +5,11 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 
 const Styled = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
 
     #btn-join {
         width: 195px;
@@ -29,26 +31,33 @@ const MFAValidationView = ({
         return (
             <Styled>
                 <h5>Enter the MFA code sent to {phone}</h5>
-                <TextField
-                    id="input-mfa-code"
-                    label="Code"
-                    type="text"
-                    margin="dense"
-                    variant="outlined"
-                    value={mfaPin}
-                    onChange={e => setMFAPin(e.target.value)}
-                    disabled={loading}
-                />
-                {error && <div>{error}</div>}
-                <Button
-                    id="btn-verify"
-                    onClick={() => onClickVerify(mfaPin)}
-                    variant="contained"
-                    color="primary"
-                    disabled={mfaPin.length !== 6 || loading}
+                <form
+                    onSubmit={e => {
+                        e.preventDefault();
+                        onClickVerify(mfaPin);
+                    }}
                 >
-                    {loading ? "Verifying..." : "Verify"}
-                </Button>
+                    <TextField
+                        id="input-mfa-code"
+                        label="Code"
+                        type="text"
+                        margin="dense"
+                        variant="outlined"
+                        value={mfaPin}
+                        onChange={e => setMFAPin(e.target.value)}
+                        disabled={loading}
+                    />
+                    {error && <div>{error}</div>}
+                    <Button
+                        id="btn-verify"
+                        variant="contained"
+                        color="primary"
+                        disabled={mfaPin.length !== 6 || loading}
+                        type="submit"
+                    >
+                        {loading ? "Verifying..." : "Verify"}
+                    </Button>
+                </form>
             </Styled>
         );
     }

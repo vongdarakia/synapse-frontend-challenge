@@ -6,8 +6,8 @@ import UnauthenticatedHome from "./UnauthenticatedHome";
 import AuthenticatedHome from "./AuthenticatedHome";
 
 const HomeView = ({ history }) => {
-    const { user } = useAuthState();
-    const [transactions, setTransactions] = useState([]);
+    const { user, userBalance } = useAuthState();
+    const [transactionsByMonth, setTransactionsByMonth] = useState([]);
     const [error, setError] = useState("");
 
     useEffect(() => {
@@ -15,20 +15,118 @@ const HomeView = ({ history }) => {
             const data = await SynapseAPI.viewTransactions(user._id);
 
             if (data.trans) {
-                setTransactions(data.trans);
+                const months = [
+                    "January",
+                    "February",
+                    "March",
+                    "April",
+                    "May",
+                    "June",
+                    "July",
+                    "August",
+                    "September",
+                    "October",
+                    "November",
+                    "December"
+                ];
+                const abrMonths = [
+                    "Jan",
+                    "Feb",
+                    "Mar",
+                    "Apr",
+                    "May",
+                    "Jun",
+                    "Jul",
+                    "Aug",
+                    "Sep",
+                    "Oct",
+                    "Nov",
+                    "Dec"
+                ];
+                const daysOfWeek = [
+                    "Sun",
+                    "Mon",
+                    "Tue",
+                    "Wed",
+                    "Thu",
+                    "Fri",
+                    "Sat"
+                ];
+                const transactionTable = {};
+
+                // Organizes the transactions so that they can be grouped
+                // by months and days
+                data.trans.forEach(transaction => {
+                    const date = new Date(
+                        transaction.timeline[
+                            transaction.timeline.length - 1
+                        ].date
+                    );
+                    const month = date.getMonth();
+                    const day = date.getDate();
+                    const dayOfWeek = date.getDay();
+
+                    if (transactionTable[month]) {
+                        if (transactionTable[month][day]) {
+                            transactionTable[month][day].transactions.push(
+                                transaction
+                            );
+                        } else {
+                            transactionTable[month][day] = {
+                                dayOfWeek,
+                                transactions: [transaction]
+                            };
+                        }
+                    } else {
+                        transactionTable[month] = {
+                            [day]: {
+                                dayOfWeek,
+                                transactions: [transaction]
+                            }
+                        };
+                    }
+                });
+
+                // Remap data into an array list of those objects. This makes it easier to
+                // render
+                const transactionsByMonth = Object.keys(transactionTable).map(
+                    month => ({
+                        month,
+                        groupName: `${months[month]} Transactions`,
+                        transactionsByDay: Object.keys(
+                            transactionTable[month]
+                        ).map(day => {
+                            const {
+                                dayOfWeek,
+                                transactions
+                            } = transactionTable[month][day];
+                            return {
+                                day,
+                                groupName: `${daysOfWeek[dayOfWeek]}, ${
+                                    abrMonths[month]
+                                } ${day}`,
+                                transactions
+                            };
+                        })
+                    })
+                );
+                setTransactionsByMonth(transactionsByMonth);
             } else if (data.error) {
                 setError(data.error.en);
             }
         };
-        loadTransactions();
-    }, []);
+
+        if (user) {
+            loadTransactions();
+        }
+    }, [user]);
 
     if (user) {
         return (
             <AuthenticatedHome
-                user={user}
+                userBalance={userBalance}
                 error={error}
-                transactions={transactions}
+                transactionsByMonth={transactionsByMonth}
             />
         );
     }

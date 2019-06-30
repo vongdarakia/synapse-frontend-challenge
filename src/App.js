@@ -16,8 +16,8 @@ import NonAuthenticatedOnlyRoute from "./components/common/NonAuthenticatedOnlyR
 import TabNavigation from "./components/common/TabNavigation";
 import { AuthProvider, useAuth } from "./components/common/AuthContext";
 import {
-    AUTH_LOG_OUT,
-    AUTH_SET_USER
+    AUTH_SET_USER,
+    SET_USER_BALANCE
 } from "./components/common/AuthContext/actions";
 import SynapseAPI from "./api/synapse-api";
 import MFAValidationView from "./components/views/MFAValidationView";
@@ -48,6 +48,32 @@ const App = () => {
                 session.refresh_token
             );
 
+            const nodeResponse = await SynapseAPI.viewAllUserNodes(session._id);
+
+            if (nodeResponse.success) {
+                const checkingAccount = nodeResponse.nodes.find(
+                    node => node.info.class === "CHECKING"
+                );
+
+                if (checkingAccount) {
+                    // Creates dummy data on each load
+                    // Not really something you would see on the actual app,
+                    // but to get a feel for what the data would look like
+                    SynapseAPI.createDummyTransaction({
+                        userId: session._id,
+                        nodeId: checkingAccount._id,
+                        amount: (Math.random() * 100).toFixed(2)
+                    });
+
+                    authDispatch({
+                        type: SET_USER_BALANCE,
+                        payload: parseFloat(
+                            checkingAccount.info.balance.amount
+                        ).toFixed(2)
+                    });
+                }
+            }
+
             if (oauth.error && !oauth.error.en.includes()) {
                 Auth.clearSession();
                 history.push(`/mfa-validation/${session._id}/`);
@@ -56,24 +82,8 @@ const App = () => {
                 authDispatch({ type: AUTH_SET_USER, payload: session });
             }
             setLoading(false);
-
-            // console.log(session);
-            // await SynapseAPI.select2FADevice(
-            //     session._id,
-            //     session.refresh_token,
-            //     session.phone_numbers[0]
-            // );
-            // console.log(
-            //     await SynapseAPI.registerFingerprint(
-            //         session._id,
-            //         session.refresh_token
-            //     )
-            // );
-            // const accounts = await SynapseAPI.linkBankAccount(session._id);
-            // // console.log(user);
         };
 
-        // SynapseAPI.viewUsers();
         if (session) {
             loadUser();
         } else {
@@ -114,37 +124,6 @@ const App = () => {
                 </Switch>
 
                 {user ? <TabNavigation /> : null}
-                {/* {user ? (
-                    <button
-                        onClick={e => {
-                            authDispatch({ type: AUTH_LOG_OUT });
-                        }}
-                    >
-                        Log out
-                    </button>
-                ) : null}
-
-                <button
-                    onClick={async () => {
-                        const session = Auth.getUserSession();
-                        const accounts = await SynapseAPI.linkBankAccount(
-                            session._id
-                        );
-                        console.log(accounts);
-                        console.log(
-                            await SynapseAPI.createDummyTransaction({
-                                userId: session._id,
-                                nodeId: accounts[0]._id,
-                                amount: 5
-                            })
-                        );
-                        console.log(
-                            await SynapseAPI.viewTransactions(session._id)
-                        );
-                    }}
-                >
-                    Link banking
-                </button> */}
             </Router>
         </Styled>
     );
